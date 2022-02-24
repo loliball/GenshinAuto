@@ -1,7 +1,7 @@
-package genshin
+package loli.ball.genshin
 
-import genshin.bean.Awards
-import genshin.bean.ListAwards
+import loli.ball.genshin.bean.Awards
+import loli.ball.genshin.bean.ListAwards
 import okhttp3.Cookie
 import java.io.FileInputStream
 import java.io.FileOutputStream

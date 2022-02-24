@@ -1,4 +1,4 @@
-package genshin.bean
+package loli.ball.genshin.bean
 
 @kotlinx.serialization.Serializable
 data class CheckinOK(

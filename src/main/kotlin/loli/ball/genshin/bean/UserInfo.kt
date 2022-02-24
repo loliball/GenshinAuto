@@ -1,4 +1,4 @@
-package genshin.bean
+package loli.ball.genshin.bean
 
 import kotlinx.serialization.Serializable
 

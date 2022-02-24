@@ -1,4 +1,5 @@
-import genshin.AutoCheckin
+package loli.ball.genshin
+
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
@@ -23,10 +24,10 @@ fun main(vararg args: String) {
         period = Duration.ofDays(1).toMillis()
     ) {
         val waitTime = Random.nextLong(Duration.ofHours(1).toMillis())
-        println("random wait ${waitTime/1000}s")
+        println("随机等待${waitTime/1000}秒")
         Thread.sleep(waitTime)
         val checkinAll = AutoCheckin.checkinAll("cookies.txt")
-        println("now: " + formatter.format(Date()))
+        println("现在是 " + formatter.format(Date()))
         println(checkinAll.joinToString("\n"))
     }
 }

@@ -1,9 +1,8 @@
-package genshin
+package loli.ball.genshin
 
-import genshin.bean.*
+import loli.ball.genshin.bean.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okhttp3.*
@@ -77,7 +76,7 @@ object RequestEncrypt {
             client.newCall(request).execute().body?.string()?.let { json ->
                 val returnData = Json.decodeFromString<ReturnData<R>>(json)
                 if (returnData.retcode != 0) {
-                    error(returnData.message)
+                    error("msg: ${returnData.message} raw: $json")
                 } else {
                     returnData.data
                 }
