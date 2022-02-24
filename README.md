@@ -19,7 +19,7 @@ dependencies {
 	implementation("com.github.WhichWho:GenshinAuto:+")
 }
 ```
-调用```genshin.AutoCheckin.checkin```传入cookie即可签到
+调用```loli.ball.genshin.AutoCheckin.checkin```传入cookie即可签到
 ## 其他的一些小工具
 从网页端，客户端获取的cookie通常包含大量无用的追踪信息  
-可以调用```genshin.AutoCheckin.distinctCookie```去除这些数据
+可以调用```loli.ball.genshin.AutoCheckin.distinctCookie```去除这些数据
