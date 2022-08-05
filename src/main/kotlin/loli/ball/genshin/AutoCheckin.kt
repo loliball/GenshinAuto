@@ -3,8 +3,8 @@ package loli.ball.genshin
 import loli.ball.genshin.bean.Awards
 import loli.ball.genshin.bean.ListAwards
 import okhttp3.Cookie
+import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.time.LocalDate
 
 @Suppress("unused")
@@ -59,21 +59,20 @@ object AutoCheckin {
         return "$FAILED 无法加载用户"
     }
 
-    fun distinctCookies(outFile: String, inFile: String) {
-        FileOutputStream(outFile).use { out ->
+    fun distinctCookies(inFile: String, outFile: String) {
+        File(outFile).outputStream().use { out ->
             val strings = mutableListOf<String>()
-            FileInputStream(inFile).reader().forEachLine {
-                strings += distinctCookie(it)
+            File(inFile).inputStream().use {
+                it.reader().forEachLine {
+                    strings += distinctCookie(it)
+                }
             }
             out.write(strings.joinToString("\n").toByteArray())
         }
     }
 
     fun distinctCookie(cookie: String): String {
-        val filterCookies = listOf(
-            "ltuid", "login_ticket", "account_id", "ltoken",
-            "cookie_token", "_MHYUUID", "aliyungf_tc"
-        )
+        val filterCookies = listOf("account_id", "cookie_token")
         val cookies = mutableListOf<Cookie>()
         cookie.split(";").forEach {
             val kv = it.split("=")

@@ -23,9 +23,31 @@ object RequestEncrypt {
         "https://api-takumi.mihoyo.com/event/bbs_sign_reward/info"
     private const val SIGN_URL =
         "https://api-takumi.mihoyo.com/event/bbs_sign_reward/sign"
+    private const val DAILY_NOTE_URL =
+        "https://api-takumi-record.mihoyo.com/game_record/app/genshin/api/dailyNote"
+    private const val UA =
+        "Mozilla/5.0 (Linux; Android 10; Redmi K30 Pro Build/QKQ1.200419.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/81.0.4044.138 Mobile Safari/537.36 miHoYoBBS/2.34.1"
 
     private val client by lazy {
         OkHttpClient()
+    }
+
+    private val json by lazy {
+        Json {
+            ignoreUnknownKeys = true
+        }
+    }
+
+    fun dailyNote(cookie: String, userInfo: UserInfo): DailyNote? {
+        val httpUrl = DAILY_NOTE_URL.toHttpUrl().newBuilder()
+            .addQueryParameter("role_id", userInfo.game_uid)
+            .addQueryParameter("server", userInfo.region)
+            .build()
+        val request = Request.Builder()
+            .url(httpUrl)
+            .headers(getHeadersDS5(cookie, httpUrl.query!!))
+            .build()
+        return requestOrError(request)
     }
 
     fun checkin(cookie: String, userInfo: UserInfo): CheckinOK? {
@@ -73,10 +95,10 @@ object RequestEncrypt {
 
     private inline fun <reified R> requestOrError(request: Request): R? {
         return runCatching {
-            client.newCall(request).execute().body?.string()?.let { json ->
-                val returnData = Json.decodeFromString<ReturnData<R>>(json)
+            client.newCall(request).execute().body?.string()?.let { json1 ->
+                val returnData = json.decodeFromString<ReturnData<R>>(json1)
                 if (returnData.retcode != 0) {
-                    error("msg: ${returnData.message} raw: $json")
+                    error("msg: ${returnData.message} raw: $json1")
                 } else {
                     returnData.data
                 }
@@ -114,14 +136,31 @@ object RequestEncrypt {
         return Headers.Builder()
             .add("Host", "api-takumi.mihoyo.com")
             .add("Connection", "keep-alive")
-            .add("Content-Length", "66")
             .add("DS", getDS221())
             .add("Origin", "https://webstatic.mihoyo.com")
-            .add("x-rpc-app_version", "2.2.1")
-            .add(
-                "User-Agent",
-                "Mozilla/5.0 (Linux; Android 10; Redmi K30 Pro Build/QKQ1.200419.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/81.0.4044.138 Mobile Safari/537.36 miHoYoBBS/2.7.0"
-            )
+            .add("x-rpc-app_version", "2.34.1")
+            .add("User-Agent", UA)
+            .add("x-rpc-device_id", "e7425860-4908-3e49-84e3-464bc8ce92a9")
+            .add("Accept", "application/json, text/plain, */*")
+            .add("Content-Type", "application/json;charset=UTF-8")
+            .add("x-rpc-client_type", "2")
+            .add("X-Requested-With", "com.mihoyo.hyperion")
+            .add("Sec-Fetch-Site", "same-site")
+            .add("Sec-Fetch-Mode", "cors")
+            .add("Sec-Fetch-Dest", "empty")
+            .add("Referer", "https://webstatic.mihoyo.com")
+            .add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+            .add("Cookie", cookie)
+            .build()
+    }
+
+    private fun getHeadersDS5(cookie: String, query: String): Headers {
+        return Headers.Builder()
+            .add("Host", "api-takumi-record.mihoyo.com")
+            .add("DS", getDS5(q = query))
+            .add("Origin", "https://webstatic.mihoyo.com")
+            .add("x-rpc-app_version", "2.34.1")
+            .add("User-Agent", UA)
             .add("x-rpc-device_id", "e7425860-4908-3e49-84e3-464bc8ce92a9")
             .add("Accept", "application/json, text/plain, */*")
             .add("Content-Type", "application/json;charset=UTF-8")
@@ -130,10 +169,7 @@ object RequestEncrypt {
             .add("Sec-Fetch-Site", "same-site")
             .add("Sec-Fetch-Mode", "cors")
             .add("Sec-Fetch-Dest", "empty")
-            .add(
-                "Referer",
-                "https://webstatic.mihoyo.com/bbs/event/signin-ys/index.html?bbs_auth_required=true&act_id=e202009291139501&utm_source=bbs&utm_medium=mys&utm_campaign=icon"
-            )
+            .add("Referer", "https://webstatic.mihoyo.com")
             .add("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
             .add("Cookie", cookie)
             .build()
@@ -146,11 +182,24 @@ object RequestEncrypt {
         //2.2.1 cx2y9z9a29tfqvr1qsq6c7yz99b5jsqt
         //2.3.0 h8w582wxwgqvahcdkpvdhbh2w9casgfl
         //2.7.0 fd3ykrh7o1j54g581upo1tvpam0dsgtf
-        val a = "cx2y9z9a29tfqvr1qsq6c7yz99b5jsqt"
+        //2.8.0 dmq2p7ka6nsu0d3ev6nex4k1ndzrnfiy
+        //2.34.1 z8DRIUjNDT7IT5IZXvrUAxyupA1peND9
+        val a = "z8DRIUjNDT7IT5IZXvrUAxyupA1peND9"
         val b = System.currentTimeMillis().toString().substring(0, 10)
         val c = UUID.randomUUID().toString().replace("-", "").substring(nextInt, nextInt + 6)
         val d = md5Hex("salt=$a&t=$b&r=$c")
         return "$b,$c,$d,"
+    }
+
+    //生成DS
+    private fun getDS5(q: String, b: String = ""): String {
+        val random = Random()
+        val nextInt = random.nextInt(15)
+        val a = "xV8v4Qu54lUKrEYFZkJhB8cuOh9Asafs"
+        val t = System.currentTimeMillis().toString().substring(0, 10)
+        val r = UUID.randomUUID().toString().replace("-", "").substring(nextInt, nextInt + 6)
+        val d = md5Hex("salt=$a&t=$t&r=$r&b=$b&q=$q")
+        return "$t,$r,$d"
     }
 
     private fun md5Hex(str: String): String {
