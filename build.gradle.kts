@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "loli.ball"
-version = "1.0.2"
+version = "1.0.4"
 val launchClass = "loli.ball.genshin.MainKt"
 
 repositories {
@@ -41,15 +41,15 @@ application {
     mainClass.set(launchClass)
 }
 
-tasks.jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes(mapOf("Main-Class" to launchClass))
-    }
-    from(configurations.runtimeClasspath.get().map {
-        if (it.isDirectory) it else zipTree(it)
-    })
-    val sourcesMain = sourceSets.main.get()
-    sourcesMain.allSource.forEach { println("add from sources: ${it.name}") }
-    from(sourcesMain.output)
-}
+//tasks.jar {
+//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//    manifest {
+//        attributes(mapOf("Main-Class" to launchClass))
+//    }
+//    from(configurations.runtimeClasspath.get().map {
+//        if (it.isDirectory) it else zipTree(it)
+//    })
+//    val sourcesMain = sourceSets.main.get()
+//    sourcesMain.allSource.forEach { println("add from sources: ${it.name}") }
+//    from(sourcesMain.output)
+//}
