@@ -51,7 +51,7 @@ object AutoCheckin {
                         "$FAILED $ua"
                     }
                 } else {
-                    "$FAILED $ua 已经签到过了"
+                    "$SUCCESS $ua 已经签到过了"
                 }
             }
             return "$FAILED $ua 无法获取签到信息"
