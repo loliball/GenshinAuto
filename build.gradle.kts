@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "loli.ball"
-version = "1.0.4"
+version = "1.0.5"
 val launchClass = "loli.ball.genshin.MainKt"
 
 repositories {
@@ -26,6 +26,7 @@ publishing {
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     testImplementation(kotlin("test"))
 }
 

@@ -10,8 +10,8 @@ import java.time.LocalDate
 @Suppress("unused")
 object AutoCheckin {
 
-    private const val SUCCESS = "签到成功"
-    private const val FAILED = "签到失败"
+    const val SUCCESS = "签到成功"
+    const val FAILED = "签到失败"
 
     private var innerAwards: ListAwards? = null
     private val awards: List<Awards>

@@ -104,7 +104,8 @@ object RequestEncrypt {
                 }
             }
         }.onFailure {
-            it.printStackTrace()
+            System.err.println("RequestEncrypt::requestOrError")
+            System.err.println(it.message)
         }.getOrNull()
     }
 
